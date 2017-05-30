@@ -2,29 +2,33 @@ const https = require("https");
 
 var authToken = "";
 
-const options = {
-    protocol: "https:",
-    host: '192.168.15.160',
-    port: 8443,
-    //path: '/devices',
-    //method: 'GET',
-    //headers: { "Authorization": token },
-    rejectUnauthorized: false
-};
+
+function createOptions() {
+    const options = {
+        protocol: "https:",
+        host: '192.168.15.160',
+        port: 8443,
+        //path: '/devices',
+        //method: 'GET',
+        //headers: { "Authorization": authToken },
+        rejectUnauthorized: false
+    };
+
+    return options;
+}
 
 
 function httpRequest(opts, func, data) {
-    const req = https.request(options, function(res) {
+    const req = https.request(opts, function(res) {
         console.log('STATUS: ' + res.statusCode);
         console.log('HEADERS: ' + JSON.stringify(res.headers));
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
             console.log('BODY: ' + chunk);
+            if (func != null) {
+                func(chunk);
+            }
         });
-
-        if (func != null) {
-            func(res);
-        }
     });
 
     if (data != null) {
@@ -35,20 +39,14 @@ function httpRequest(opts, func, data) {
 }
 
 
-function processLoginResponse(res) {
-    res.on('data', function (chunk) {
-        authToken = JSON.parse(chunk)['securityToken'];
-
-        triggerStatus();
-        //triggerTurnOff();
-        //triggerSingleStatus();
-    });
+function processLoginResponse(data) {
+    authToken = JSON.parse(data)['securityToken'];
 }
 
 
 //curl -vk 'https://192.168.15.160:8443/session' -d '{"username" : "user1", "password" : "password", "serialNumber" : "OSR1522003302"}' -H 'Content-Type: Application/Json'
 function login() {
-    const loginOpts = options;
+    const loginOpts = createOptions();
     loginOpts.path = '/session';
     loginOpts.method = 'POST';
     const data = '{"username" : "user1", "password" : "password", "serialNumber" : "OSR1522003302"}';
@@ -62,8 +60,8 @@ function login() {
 
 
 // curl -vk 'https://192.168.15.160:8443/devices' -H 'Authorization: 2624593743756043217043494512099'
-function statusDevices() {
-    const statusOpts = options;
+function statusDevices(func) {
+    const statusOpts = createOptions();
     statusOpts.path = '/devices';
     statusOpts.method = 'GET';
     statusOpts.headers = { "Authorization": authToken };
@@ -74,7 +72,7 @@ function statusDevices() {
 
 //curl -vk 'https://192.168.15.160:8443/devices/1' -H 'Authorization: 2624593743756043217043494512099'
 function statusDevice(index) {
-    const statusOpts = options;
+    const statusOpts = createOptions();
     statusOpts.path = '/devices/' + index;
     statusOpts.method = 'GET';
     statusOpts.headers = { "Authorization": authToken };
@@ -85,7 +83,7 @@ function statusDevice(index) {
 
 //curl -vk 'https://192.168.15.160:8443/device/set?idx=1&onoff=1' -H 'Authorization: 2624593743756043217043494512099'
 function turnOnDevice(deviceIndex) {
-    const turnOnOpts = options;
+    const turnOnOpts = createOptions();
     turnOnOpts.path = '/device/set?onoff=1&idx=' + deviceIndex;
     turnOnOpts.method = 'GET';
     turnOnOpts.headers = { "Authorization": authToken };
@@ -96,7 +94,7 @@ function turnOnDevice(deviceIndex) {
 
 //curl -vk 'https://192.168.15.160:8443/device/set?idx=1&onoff=0' -H 'Authorization: 2624593743756043217043494512099'
 function turnOffDevice(deviceIndex) {
-    const turnOffOpts = options;
+    const turnOffOpts = createOptions();
     turnOffOpts.path = '/device/set?onoff=0&idx=' + deviceIndex;
     turnOffOpts.method = 'GET';
     turnOffOpts.headers = { "Authorization": authToken };
@@ -105,36 +103,40 @@ function turnOffDevice(deviceIndex) {
 }
 
 
-function triggerStatus() {
-    statusDevices();
+//curl -vk 'https://192.168.15.160:8443/device/all/set?onoff=1' -H 'Authorization: 2624593743756043217043494512099'
+function turnOnDevices() {
+    const turnOnOpts = createOptions();
+    turnOnOpts.path = '/device/all/set?onoff=1';
+    turnOnOpts.method = 'GET';
+    turnOnOpts.headers = { "Authorization": authToken };
+
+    httpRequest(turnOnOpts);
 }
 
 
-function triggerSingleStatus() {
-    statusDevice(1);
+//curl -vk 'https://192.168.15.160:8443/device/all/set?onoff=0' -H 'Authorization: 2624593743756043217043494512099'
+function turnOffDevices() {
+    const turnOffOpts = createOptions();
+    turnOffOpts.path = '/device/all/set?onoff=0';
+    turnOffOpts.method = 'GET';
+    turnOffOpts.headers = { "Authorization": authToken };
+
+    httpRequest(turnOffOpts);
 }
 
 
-function triggerTurnOn() {
-    turnOnDevice(1);
+//curl -vk 'https://192.168.15.160:8443/session' -H 'Authorization: 2624593743756043217043494512099' -X DELETE
+function logout() {
+    const logoutOpts = createOptions();
+    logoutOpts.path = '/session';
+    logoutOpts.method = 'DELETE';
+    logoutOpts.headers = { "Authorization": authToken };
+
+    httpRequest(logoutOpts);
 }
-
-
-function triggerTurnOff() {
-    turnOffDevice(1);
-}
-
 
 login();
 
-/*
 
-// Logout (DELETE):
-curl -vk 'https://192.168.15.160:8443/session' -H 'Authorization: 2624593743756043217043494512099' -X DELETE
 
-// On - All devices (GET):
-curl -vk 'https://192.168.15.160:8443/device/all/set?onoff=1' -H 'Authorization: 2624593743756043217043494512099'
 
-// Off - All devices (GET):
-curl -vk 'https://192.168.15.160:8443/device/all/set?onoff=0' -H 'Authorization: 2624593743756043217043494512099'
-*/

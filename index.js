@@ -166,8 +166,10 @@ function setupExpress() {
         res.end();
     })
 
+    app.use(express.static('public'))
+
     app.listen(3000, function () {
-      console.log('Example app listening on port 3000!')
+      console.log('Smart power adapter controll app listening on port 3000!')
     })
 }
 

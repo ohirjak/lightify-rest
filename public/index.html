@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script>
+            $(function() {
+                $.get("/status", function( data ) {
+                    console.log(data);
+
+                    const list = JSON.parse(data);
+
+                    console.log(list.length);
+
+                    for (i = 0; i < list.length; i++) {
+                        console.log(list[i]);
+                        console.log(list[i].modelName + " " + list[i].deviceId + " " + list[i].on);
+                    }
+                });
+            });
+
+            function toggle(index) {
+                $.post("/on/" + index, function() {
+                    console.log("juhu");
+                    $.get("/status", function( data ) {
+                        console.log(data);
+                    });
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <div>Status</div>
+        <div>
+            <div>Plug 01</div>
+            <div><button onclick="toggle(1)">ON</button></div>
+        </div>
+        <div>
+            <div>Plug 02</div>
+            <div><button onclick="toggle(2)">ON</button></div>
+        </div>
+    </body>
+</html>

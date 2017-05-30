@@ -2,40 +2,60 @@
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script>
-            $(function() {
-                $.get("/status", function( data ) {
-                    console.log(data);
+            function plugState(state) {
+                return state == 1 ? "ON" : "OFF";
+            }
 
+            function plugNewState(state) {
+                return 1 - state;
+            }
+
+            function plugStateRest(state) {
+                return state == 1 ? "on" : "off";
+            }
+
+            function plugStateColor(state) {
+                return state == 1 ? "green" : "red";
+            }
+
+            function refreshState(index) {
+                $.get("/status", function( data ) {
                     const list = JSON.parse(data);
 
-                    console.log(list.length);
+                    for (i = 0; i < list.length; i++) {
+                        $("#plug" + list[i].deviceId).attr('onclick', "toggle(" + list[i].deviceId + ", " + plugNewState(list[i].on) + ")");
+                        $("#plug" + list[i].deviceId).text(plugState(list[i].on));
+                        $("#plug" + list[i].deviceId).css('background-color', plugStateColor(list[i].on));
+                    }
+
+                    $("#plug" + index).attr("disabled", false);
+                });
+            }
+
+            $(function() {
+                $.get("/status", function( data ) {
+                    const list = JSON.parse(data);
 
                     for (i = 0; i < list.length; i++) {
-                        console.log(list[i]);
-                        console.log(list[i].modelName + " " + list[i].deviceId + " " + list[i].on);
+                        var plug = { name : list[i].modelName, id : list[i].deviceId, state : list[i].on };
+
+                        $("#plugs").append("<div>" + list[i].modelName + "</div><div><button id=plug" + list[i].deviceId + " onclick='toggle(" + list[i].deviceId + ", " + plugNewState(list[i].on) + ")'>" + plugState(list[i].on) + "</button></div>");
+
+                        $("#plug" + list[i].deviceId).css('background-color', plugStateColor(list[i].on));
                     }
                 });
             });
 
-            function toggle(index) {
-                $.post("/on/" + index, function() {
-                    console.log("juhu");
-                    $.get("/status", function( data ) {
-                        console.log(data);
-                    });
+            function toggle(index, state) {
+                $("#plug" + index).attr("disabled", true);
+                $.post("/" + plugStateRest(state) + "/" + index, function() {
+                    refreshState(index);
                 });
             }
         </script>
     </head>
     <body>
         <div>Status</div>
-        <div>
-            <div>Plug 01</div>
-            <div><button onclick="toggle(1)">ON</button></div>
-        </div>
-        <div>
-            <div>Plug 02</div>
-            <div><button onclick="toggle(2)">ON</button></div>
-        </div>
+        <div id="plugs"></div>
     </body>
 </html>

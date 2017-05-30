@@ -1,3 +1,4 @@
+const express = require('express')
 const https = require("https");
 
 var authToken = "";
@@ -66,7 +67,7 @@ function statusDevices(func) {
     statusOpts.method = 'GET';
     statusOpts.headers = { "Authorization": authToken };
 
-    httpRequest(statusOpts);
+    httpRequest(statusOpts, func);
 }
 
 
@@ -135,8 +136,41 @@ function logout() {
     httpRequest(logoutOpts);
 }
 
+
+function setupExpress() {
+    const app = express()
+
+    app.get('/status', function (req, res) {
+        statusDevices(function(restResp) {
+            res.send(restResp);
+        });
+    })
+
+    app.post('/on/:index', function(req, res) {
+        if (req.params.index == 'all') {
+            turnOnDevices();
+        } else {
+            turnOnDevice(req.params.index);
+        }
+
+        res.end();
+    })
+
+    app.post('/off/:index', function(req, res) {
+        if (req.params.index == 'all') {
+            turnOffDevices();
+        } else {
+            turnOffDevice(req.params.index);
+        }
+
+        res.end();
+    })
+
+    app.listen(3000, function () {
+      console.log('Example app listening on port 3000!')
+    })
+}
+
+
+setupExpress();
 login();
-
-
-
-

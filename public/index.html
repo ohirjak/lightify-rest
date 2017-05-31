@@ -2,10 +2,6 @@
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script>
-            function plugState(state) {
-                return state == 1 ? "ON" : "OFF";
-            }
-
             function plugNewState(state) {
                 return 1 - state;
             }
@@ -24,7 +20,7 @@
 
                     for (i = 0; i < list.length; i++) {
                         $("#plug" + list[i].deviceId).attr('onclick', "toggle(" + list[i].deviceId + ", " + plugNewState(list[i].on) + ")");
-                        $("#plug" + list[i].deviceId).text(plugState(list[i].on));
+                        $("#plug" + list[i].deviceId).text(list[i].modelName);
                         $("#plug" + list[i].deviceId).css('background-color', plugStateColor(list[i].on));
                     }
 
@@ -32,19 +28,19 @@
                 });
             }
 
-            $(function() {
+            function initPlugs() {
                 $.get("/status", function( data ) {
                     const list = JSON.parse(data);
 
                     for (i = 0; i < list.length; i++) {
                         var plug = { name : list[i].modelName, id : list[i].deviceId, state : list[i].on };
 
-                        $("#plugs").append("<div>" + list[i].modelName + "</div><div><button id=plug" + list[i].deviceId + " onclick='toggle(" + list[i].deviceId + ", " + plugNewState(list[i].on) + ")'>" + plugState(list[i].on) + "</button></div>");
+                        $("#plugs").append("<div><button id=plug" + list[i].deviceId + " onclick='toggle(" + list[i].deviceId + ", " + plugNewState(list[i].on) + ")'>" + list[i].modelName + "</button></div>");
 
                         $("#plug" + list[i].deviceId).css('background-color', plugStateColor(list[i].on));
                     }
                 });
-            });
+            }
 
             function toggle(index, state) {
                 $("#plug" + index).attr("disabled", true);
@@ -52,10 +48,14 @@
                     refreshState(index);
                 });
             }
+
+            $(function() {
+                initPlugs();
+            });
         </script>
     </head>
     <body>
-        <div>Status</div>
+        <div>Smart power adapters status</div>
         <div id="plugs"></div>
     </body>
 </html>

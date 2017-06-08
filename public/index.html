@@ -14,13 +14,17 @@
                 return state == 1 ? "green" : "red";
             }
 
+            function plugName(plug) {
+                return plug.modelName + " - " + plug.deviceId;
+            }
+
             function refreshState(index) {
                 $.get("/status", function( data ) {
                     const list = JSON.parse(data);
 
                     for (i = 0; i < list.length; i++) {
                         $("#plug" + list[i].deviceId).attr('onclick', "toggle(" + list[i].deviceId + ", " + plugNewState(list[i].on) + ")");
-                        $("#plug" + list[i].deviceId).text(list[i].modelName);
+                        $("#plug" + list[i].deviceId).text(plugName(list[i]));
                         $("#plug" + list[i].deviceId).css('background-color', plugStateColor(list[i].on));
                     }
 
@@ -35,7 +39,7 @@
                     for (i = 0; i < list.length; i++) {
                         var plug = { name : list[i].modelName, id : list[i].deviceId, state : list[i].on };
 
-                        $("#plugs").append("<div><button id=plug" + list[i].deviceId + " onclick='toggle(" + list[i].deviceId + ", " + plugNewState(list[i].on) + ")'>" + list[i].modelName + "</button></div>");
+                        $("#plugs").append("<div><button id=plug" + list[i].deviceId + " onclick='toggle(" + list[i].deviceId + ", " + plugNewState(list[i].on) + ")'>" + plugName(list[i]) + "</button></div>");
 
                         $("#plug" + list[i].deviceId).css('background-color', plugStateColor(list[i].on));
                     }

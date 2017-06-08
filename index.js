@@ -1,6 +1,10 @@
 const express = require('express')
 const https = require("https");
 
+const username = "user1";
+const password = "password";
+const serialNumber = "OSR1522003302";
+
 var authToken = "";
 
 
@@ -50,7 +54,7 @@ function login() {
     const loginOpts = createOptions();
     loginOpts.path = '/session';
     loginOpts.method = 'POST';
-    const data = '{"username" : "user1", "password" : "password", "serialNumber" : "OSR1522003302"}';
+    const data = '{"username" : "' + username + '", "password" : "' + password + '", "serialNumber" : "' + serialNumber + '"}';
     loginOpts.headers = {
         'Content-Type': 'Application/Json',
         'Content-Length': data.length

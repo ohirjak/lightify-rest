@@ -11,7 +11,7 @@ var authToken = "";
 function createOptions() {
     const options = {
         protocol: "https:",
-        host: '192.168.15.160',
+        host: '192.168.15.142',
         port: 8443,
         //path: '/devices',
         //method: 'GET',
@@ -49,7 +49,7 @@ function processLoginResponse(data) {
 }
 
 
-//curl -vk 'https://192.168.15.160:8443/session' -d '{"username" : "user1", "password" : "password", "serialNumber" : "OSR1522003302"}' -H 'Content-Type: Application/Json'
+//curl -vk 'https://192.168.15.142:8443/session' -d '{"username" : "user1", "password" : "password", "serialNumber" : "OSR1522003302"}' -H 'Content-Type: Application/Json'
 function login() {
     const loginOpts = createOptions();
     loginOpts.path = '/session';
@@ -64,7 +64,7 @@ function login() {
 }
 
 
-// curl -vk 'https://192.168.15.160:8443/devices' -H 'Authorization: 2624593743756043217043494512099'
+// curl -vk 'https://192.168.15.142:8443/devices' -H 'Authorization: 2624593743756043217043494512099'
 function statusDevices(func) {
     const statusOpts = createOptions();
     statusOpts.path = '/devices';
@@ -75,7 +75,7 @@ function statusDevices(func) {
 }
 
 
-//curl -vk 'https://192.168.15.160:8443/devices/1' -H 'Authorization: 2624593743756043217043494512099'
+//curl -vk 'https://192.168.15.142:8443/devices/1' -H 'Authorization: 2624593743756043217043494512099'
 function statusDevice(index) {
     const statusOpts = createOptions();
     statusOpts.path = '/devices/' + index;
@@ -86,7 +86,7 @@ function statusDevice(index) {
 }
 
 
-//curl -vk 'https://192.168.15.160:8443/device/set?idx=1&onoff=1' -H 'Authorization: 2624593743756043217043494512099'
+//curl -vk 'https://192.168.15.142:8443/device/set?idx=1&onoff=1' -H 'Authorization: 2624593743756043217043494512099'
 function turnOnDevice(deviceIndex) {
     const turnOnOpts = createOptions();
     turnOnOpts.path = '/device/set?onoff=1&idx=' + deviceIndex;
@@ -97,7 +97,7 @@ function turnOnDevice(deviceIndex) {
 }
 
 
-//curl -vk 'https://192.168.15.160:8443/device/set?idx=1&onoff=0' -H 'Authorization: 2624593743756043217043494512099'
+//curl -vk 'https://192.168.15.142:8443/device/set?idx=1&onoff=0' -H 'Authorization: 2624593743756043217043494512099'
 function turnOffDevice(deviceIndex) {
     const turnOffOpts = createOptions();
     turnOffOpts.path = '/device/set?onoff=0&idx=' + deviceIndex;
@@ -108,7 +108,7 @@ function turnOffDevice(deviceIndex) {
 }
 
 
-//curl -vk 'https://192.168.15.160:8443/device/all/set?onoff=1' -H 'Authorization: 2624593743756043217043494512099'
+//curl -vk 'https://192.168.15.142:8443/device/all/set?onoff=1' -H 'Authorization: 2624593743756043217043494512099'
 function turnOnDevices() {
     const turnOnOpts = createOptions();
     turnOnOpts.path = '/device/all/set?onoff=1';
@@ -119,7 +119,7 @@ function turnOnDevices() {
 }
 
 
-//curl -vk 'https://192.168.15.160:8443/device/all/set?onoff=0' -H 'Authorization: 2624593743756043217043494512099'
+//curl -vk 'https://192.168.15.142:8443/device/all/set?onoff=0' -H 'Authorization: 2624593743756043217043494512099'
 function turnOffDevices() {
     const turnOffOpts = createOptions();
     turnOffOpts.path = '/device/all/set?onoff=0';
@@ -130,7 +130,7 @@ function turnOffDevices() {
 }
 
 
-//curl -vk 'https://192.168.15.160:8443/session' -H 'Authorization: 2624593743756043217043494512099' -X DELETE
+//curl -vk 'https://192.168.15.142:8443/session' -H 'Authorization: 2624593743756043217043494512099' -X DELETE
 function logout() {
     const logoutOpts = createOptions();
     logoutOpts.path = '/session';

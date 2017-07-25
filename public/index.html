@@ -42,6 +42,10 @@
                         $("#plugs").append("<div><button id=plug" + list[i].deviceId + " onclick='toggle(" + list[i].deviceId + ", " + plugNewState(list[i].on) + ")'>" + plugName(list[i]) + "</button></div>");
 
                         $("#plug" + list[i].deviceId).css('background-color', plugStateColor(list[i].on));
+
+                        if (list[i].online != 1) {
+                            $("#plug" + list[i].deviceId).attr("disabled", true);
+                        }
                     }
                 });
             }
